@@ -11,21 +11,19 @@ import it.rdev.blog.api.dao.entity.Articolo;
 
 @Repository
 public interface ArticoloDAO extends CrudRepository<Articolo, Integer>{
-	Set<Articolo> findByAutore(String user);
-	Set<Articolo> findByCategoria(String categoria);
 	
-	@Query("SELECT a FROM articolo a WHERE a.titolo like :titolo OR a.sottotitolo like :titolo OR a.testo like :titolo")
-	Set<Articolo> findXword(@Param("titolo") String word);
+	@Query("SELECT a FROM Articolo a WHERE a.titolo like :titolo OR a.sottotitolo like :titolo OR a.testo like :titolo")
+	Set<Articolo> findPerWord(@Param("titolo") String word);
 	
-	@Query("SELECT a FROM articolo a")
+	@Query("SELECT a FROM Articolo a")
 	Set<Articolo> findAll();
 	
-	//cerca tramite un tag
-	Set<Articolo> findByTags(Set<Articolo> tags);
+	//cerca tramite autore
+	Set<Articolo> findByAutore(String user);
+	
 	//cerca tramite id
 	@Query("Select a from Articolo a where id = :id")
 	Articolo findById(long id);
 	
-	//cerca tramite autore
 	//elimina tramite id
 }

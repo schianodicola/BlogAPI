@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.rdev.blog.api.controller.dto.ArticoloDTO;
+import it.rdev.blog.api.controller.dto.StatoDTO;
 import it.rdev.blog.api.dao.ArticoloDAO;
 import it.rdev.blog.api.dao.entity.Articolo;
 
@@ -17,29 +18,29 @@ public class BlogArticoloDetailService{
 	private ArticoloDAO aDao;
 	
 	public Set<ArticoloDTO> findXword(String s){
-		Set<Articolo> a= aDao.findXword(s);
-		Set<ArticoloDTO> aDTO= entityToDto(a);
+		Set<Articolo> a= aDao.findPerWord(s);
+		Set<ArticoloDTO> aDTO= entityToDTO(a);
 		return aDTO;
 		
 	}
 	
-	public Set<ArticoloDTO> entityToDto(Set<Articolo> art){
+	public Set<ArticoloDTO> entityToDTO(Set<Articolo> art){
 		
 		Set<ArticoloDTO> aDTO= new HashSet<>();
 		
 		for(Articolo a: art) {
 			ArticoloDTO articoloDTO = new ArticoloDTO();
-			/*
+			
 			articoloDTO.setTitolo(a.getTitolo());
 			articoloDTO.setSottotitolo(a.getSottotitolo());
 			articoloDTO.setTesto(a.getTesto());
 			articoloDTO.setAutore(a.getAutore());
 			articoloDTO.setCategoria(a.getCategoria());
 			articoloDTO.setTags(a.getTags());
-			articoloDTO.setData_creazione(a.getData_crezione());
-			articoloDTO.setData_modifica(a.getData_modifica());
-			articoloDTO.setData_pubblicazione(a.getData_pubblicazione());
-			*/
+			articoloDTO.setDataCreazione(a.getDataCreazione());
+			articoloDTO.setDataUltimaModifica(a.getDataUltimaModifica());
+			//articoloDTO.setDataPubblicazione(a.getDataPubblicazione());
+			
 		}
 		
 		return aDTO;

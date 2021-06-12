@@ -3,19 +3,23 @@ package it.rdev.blog.api.controller.dto;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import it.rdev.blog.api.dao.entity.Categoria;
+import it.rdev.blog.api.dao.entity.Tag;
+import it.rdev.blog.api.dao.entity.User;
+
 
 public class ArticoloDTO {
 	
 	private String titolo;
-	private String sottotiolo;
+	private String sottotitolo;
 	private String testo;
-	private String autore;
+	private User autore;
 	private LocalDateTime dataPubblicazione;
 	private LocalDateTime dataUltimaModifica;
 	private LocalDateTime dataCreazione;
 	
-	private Set<CategoriaDTO> categorie;
-	private Set<TagDTO> tags;
+	private Categoria categoria;
+	private Set<Tag> tags;
 	
 	public String getTitolo() {
 		return titolo;
@@ -23,11 +27,11 @@ public class ArticoloDTO {
 	public void setTitolo(String titolo) {
 		this.titolo = titolo;
 	}
-	public String getSottotiolo() {
-		return sottotiolo;
+	public String getSottotitolo() {
+		return sottotitolo;
 	}
-	public void setSottotiolo(String sottotiolo) {
-		this.sottotiolo = sottotiolo;
+	public void setSottotitolo(String sottotitolo) {
+		this.sottotitolo = sottotitolo;
 	}
 	public String getTesto() {
 		return testo;
@@ -35,10 +39,10 @@ public class ArticoloDTO {
 	public void setTesto(String testo) {
 		this.testo = testo;
 	}
-	public String getAutore() {
+	public User getAutore() {
 		return autore;
 	}
-	public void setAutore(String autore) {
+	public void setAutore(User autore) {
 		this.autore = autore;
 	}
 	public LocalDateTime getDataPubblicazione() {
@@ -59,16 +63,16 @@ public class ArticoloDTO {
 	public void setDataCreazione(LocalDateTime dataCreazione) {
 		this.dataCreazione = dataCreazione;
 	}
-	public Set<CategoriaDTO> getCategorie() {
-		return categorie;
+	public Categoria getCategoria() {
+		return categoria;
 	}
-	public void setCategorie(Set<CategoriaDTO> categorie) {
-		this.categorie = categorie;
+	public void setCategoria(Categoria categoria) {
+		this.categoria = categoria;
 	}
-	public Set<TagDTO> getTags() {
+	public Set<Tag> getTags() {
 		return tags;
 	}
-	public void setTags(Set<TagDTO> tags) {
+	public void setTags(Set<Tag> tags) {
 		this.tags = tags;
 	}
 	

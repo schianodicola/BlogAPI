@@ -33,10 +33,10 @@ public class Articolo {
 	
 	@OneToOne(mappedBy="articolo")
 	private Stato stato;
-	//private LocalDateTime dataUltimaModifica;
+	//private LocalDateTime dataPubblicazione;
 	
 	@Column
-	private LocalDateTime dataPubblicazione;
+	private LocalDateTime dataUltimaModifica;
 	@Column
 	private LocalDateTime dataCreazione;
 	public long getId() {
@@ -87,11 +87,12 @@ public class Articolo {
 	public void setStato(Stato stato) {
 		this.stato = stato;
 	}
-	public LocalDateTime getDataPubblicazione() {
-		return dataPubblicazione;
+	
+	public LocalDateTime getDataUltimaModifica() {
+		return dataUltimaModifica;
 	}
-	public void setDataPubblicazione(LocalDateTime dataPubblicazione) {
-		this.dataPubblicazione = dataPubblicazione;
+	public void setDataUltimaModifica(LocalDateTime dataUltimaModifica) {
+		this.dataUltimaModifica = dataUltimaModifica;
 	}
 	public LocalDateTime getDataCreazione() {
 		return dataCreazione;
