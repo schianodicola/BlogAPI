@@ -17,7 +17,31 @@ public class Stato {
 	private Articolo articolo;
 	
 	@Column
-	private LocalDateTime data_pubblicazione;
+	private LocalDateTime dataPubblicazione;
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public Articolo getArticolo() {
+		return articolo;
+	}
+
+	public void setArticolo(Articolo articolo) {
+		this.articolo = articolo;
+	}
+
+	public LocalDateTime getDataPubblicazione() {
+		return dataPubblicazione;
+	}
+
+	public void setData_pubblicazione(LocalDateTime dataPubblicazione) {
+		this.dataPubblicazione = dataPubblicazione;
+	}
 	
 	
 }
