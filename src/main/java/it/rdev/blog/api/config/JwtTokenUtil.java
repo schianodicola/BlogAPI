@@ -13,17 +13,15 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import it.rdev.blog.api.service.bean.BlogUserDetails;
 
 @Component
 public class JwtTokenUtil implements Serializable {
-
 	private static final long serialVersionUID = -2550185165626007488L;
-
 	@Value("${jwt.secret}")
 	private String secret;
 	@Value("${jwt.expiration:1}")
 	private Integer expiration;
-
 	/**
 	 * Metodo che recupera il nome utente dal token JWT
 	 * @param token Stringa che rappresenta il token da cui recuperare lo username
@@ -31,6 +29,10 @@ public class JwtTokenUtil implements Serializable {
 	 */
 	public String getUsernameFromToken(String token) {
 		return getClaimFromToken(token, Claims::getSubject);
+	}
+
+	public Long getUserIdFromToken(String token) {
+		return Long.parseLong(getClaimFromToken(token, Claims::getIssuer));
 	}
 
 	/**
@@ -41,12 +43,10 @@ public class JwtTokenUtil implements Serializable {
 	public Date getExpirationDateFromToken(String token) {
 		return getClaimFromToken(token, Claims::getExpiration);
 	}
-
 	public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
 		final Claims claims = getAllClaimsFromToken(token);
 		return claimsResolver.apply(claims);
 	}
-
 	/**
 	 * Metodo che recupera tutte le informazioni dal token. Per decodificare il token
 	 * in modo da ottenerne le informazioni abbiamo bisogno di utilizzare la secret
@@ -57,7 +57,6 @@ public class JwtTokenUtil implements Serializable {
 	private Claims getAllClaimsFromToken(String token) {
 		return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 	}
-
 	/**
 	 * Metodo per verificare se il token è scaduto
 	 * @param token
@@ -67,7 +66,6 @@ public class JwtTokenUtil implements Serializable {
 		final Date expiration = getExpirationDateFromToken(token);
 		return expiration.before(new Date());
 	}
-
 	/**
 	 * Metodo per generare il token a partire dalle informazioni dell'utente
 	 * @param userDetails
@@ -75,6 +73,10 @@ public class JwtTokenUtil implements Serializable {
 	 */
 	public String generateToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
+		if(userDetails instanceof BlogUserDetails) {
+			BlogUserDetails user = (BlogUserDetails) userDetails;
+			claims.put(Claims.ISSUER, user.getId());
+		}
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
 
@@ -92,7 +94,6 @@ public class JwtTokenUtil implements Serializable {
 				.setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
 	}
-
 	/**
 	 * Valida il token JWT
 	 * @param token
