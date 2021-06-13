@@ -26,4 +26,6 @@ public interface ArticoloDAO extends CrudRepository<Articolo, Integer>{
 	Articolo findById(long id);
 	
 	//elimina tramite id
+	@Query("DELETE FROM Articolo a WHERE a.id = :idArticolo")
+	boolean deleteById(long idArticolo);
 }

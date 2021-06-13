@@ -4,23 +4,34 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import it.rdev.blog.api.dao.entity.Categoria;
+import it.rdev.blog.api.dao.entity.Stato;
 import it.rdev.blog.api.dao.entity.Tag;
 import it.rdev.blog.api.dao.entity.User;
 
 
 public class ArticoloDTO {
 	
+	private Integer id;
 	private String titolo;
 	private String sottotitolo;
 	private String testo;
 	private User autore;
-	private LocalDateTime dataPubblicazione;
+	//private LocalDateTime dataPubblicazione;
 	private LocalDateTime dataUltimaModifica;
 	private LocalDateTime dataCreazione;
 	
 	private Categoria categoria;
+	private Stato stato;
 	private Set<Tag> tags;
 	
+	
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	public String getTitolo() {
 		return titolo;
 	}
@@ -45,12 +56,14 @@ public class ArticoloDTO {
 	public void setAutore(User autore) {
 		this.autore = autore;
 	}
+	/*
 	public LocalDateTime getDataPubblicazione() {
 		return dataPubblicazione;
 	}
 	public void setDataPubblicazione(LocalDateTime dataPubblicazione) {
 		this.dataPubblicazione = dataPubblicazione;
 	}
+	*/
 	public LocalDateTime getDataUltimaModifica() {
 		return dataUltimaModifica;
 	}
@@ -74,6 +87,12 @@ public class ArticoloDTO {
 	}
 	public void setTags(Set<Tag> tags) {
 		this.tags = tags;
+	}
+	public Stato getStato() {
+		return stato;
+	}
+	public void setStato(Stato stato) {
+		this.stato = stato;
 	}
 	
 	

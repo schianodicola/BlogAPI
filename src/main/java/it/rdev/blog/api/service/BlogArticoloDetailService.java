@@ -41,7 +41,8 @@ public class BlogArticoloDetailService{
 			articoloDTO.setTags(a.getTags());
 			articoloDTO.setDataCreazione(a.getDataCreazione());
 			articoloDTO.setDataUltimaModifica(a.getDataUltimaModifica());
-			articoloDTO.setDataPubblicazione(a.getStato().getDataPubblicazione());
+			//articoloDTO.setDataPubblicazione(a.getStato().getDataPubblicazione());
+			articoloDTO.setStato(a.getStato());
 			
 		}
 		
@@ -51,33 +52,38 @@ public class BlogArticoloDetailService{
 	public Set<ArticoloDTO> findAll(String token){
 		Set<Articolo> lista = aDao.findAll();
 		Set<ArticoloDTO> listaDto = new HashSet<>();
-		
-		
-			//for(Articolo a: lista) {
+			
 		listaDto= entityToDTO(lista);
 					
-			//}
 		
-			
 		return listaDto;
 	}
 	
 	private Articolo dtoToEntity(ArticoloDTO aDTO) {
 		
-		//svolgere la conversione
-		return null;
+		//svolge la conversione
+		Articolo a = new Articolo();
+		
+		a.setId(aDTO.getId());
+		a.setTitolo(aDTO.getTitolo());
+		a.setSottotitolo(aDTO.getSottotitolo());
+		a.setTesto(aDTO.getTesto());
+		//a.setDataPubblicazione(aDTO.getStato().getDataPubblicazione());
+		a.setDataUltimaModifica(aDTO.getDataUltimaModifica());
+		a.setDataCreazione(aDTO.getDataCreazione());
+		a.setStato(aDTO.getStato());
+		
+		return a;
 	}
 		
 	public void pubblica(ArticoloDTO articolo) {
 		aDao.save(dtoToEntity(articolo));
 	}
 	
-	//elimina il post  tramite autore
-	public boolean elimina(long id, long idAutore) {
-		User utente = new User();
-		utente.setId(idAutore);
-		//return aDao.deleteBy;
-		return false;
+	//elimina il post tramite id post
+	public boolean elimina(long id) {
+		
+		return aDao.deleteById(id);
 		
 	}
 	
