@@ -19,6 +19,7 @@ public interface ArticoloDAO extends CrudRepository<Articolo, Integer>{
 	Set<Articolo> findAll();
 	
 	//cerca tramite autore
+	@Query("SELECT a FROM Articolo a INNER JOIN a.autore aa WHERE aa.autore= :autore")
 	Set<Articolo> findByAutore(String user);
 	
 	//cerca tramite id

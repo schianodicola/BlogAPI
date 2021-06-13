@@ -1,6 +1,7 @@
 package it.rdev.blog.api.service;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class BlogArticoloDetailService{
 		return aDTO;
 	}
 	
-	public Set<ArticoloDTO> findAll(String token){
+	public Set<ArticoloDTO> findAll(){
 		Set<Articolo> lista = aDao.findAll();
 		Set<ArticoloDTO> listaDto = new HashSet<>();
 			
@@ -87,5 +88,24 @@ public class BlogArticoloDetailService{
 		
 	}
 	
+	//cerca tramite autore
+	public Set<ArticoloDTO> findByAutore(String user){
+		Set<ArticoloDTO> listaDto = new HashSet<>();
+		
+		listaDto= entityToDTO(aDao.findByAutore(user));
+		return listaDto;
+		//return null;
+		
+	}
+	
+	public ArticoloDTO findById(long id) {
+		Set<ArticoloDTO> listaDto = new HashSet<>();
+		Set<Articolo> a= new HashSet<>();
+		a.add(aDao.findById(id));
+		
+		listaDto= entityToDTO(a);
+		Iterator<ArticoloDTO> i= listaDto.iterator();
+		return i.next();
+	}
 	
 }
