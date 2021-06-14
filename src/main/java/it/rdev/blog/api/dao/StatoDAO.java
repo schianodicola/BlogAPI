@@ -1,11 +1,12 @@
 package it.rdev.blog.api.dao;
 
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import it.rdev.blog.api.dao.entity.Articolo;
 
 
-
+@Repository
 public interface StatoDAO {
 	
 		//cerca tramite stato
