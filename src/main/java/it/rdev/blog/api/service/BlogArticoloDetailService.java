@@ -60,9 +60,10 @@ public class BlogArticoloDetailService{
 		return listaDto;
 	}
 	
+	//svolge la conversione
 	private Articolo dtoToEntity(ArticoloDTO aDTO) {
 		
-		//svolge la conversione
+		
 		Articolo a = new Articolo();
 		
 		a.setId(aDTO.getId());
@@ -87,6 +88,11 @@ public class BlogArticoloDetailService{
 		return aDao.deleteById(id);
 		
 	}
+	public boolean deleteByUser(long idArticolo, long idAutore) {
+		User autore= new User();
+		autore.setId(idAutore);
+		return aDao.deleteByIdAndUser(idArticolo, autore);
+	}
 	
 	//cerca tramite autore
 	public Set<ArticoloDTO> findByAutore(String user){
@@ -96,6 +102,15 @@ public class BlogArticoloDetailService{
 		return listaDto;
 		//return null;
 		
+	}
+	
+	//cerca tramite autore gli articoli pubblicati e non
+	public Set<ArticoloDTO> findByAutoreNotPublish(String user, Stato stato){
+		Set<ArticoloDTO> listaDto = new HashSet<>();
+			
+		listaDto= entityToDTO(aDao.findByAutoreNotPublish(user, stato));
+		return listaDto;
+						
 	}
 	
 	public ArticoloDTO findById(long id) {

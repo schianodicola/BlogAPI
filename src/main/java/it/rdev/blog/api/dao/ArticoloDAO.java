@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import it.rdev.blog.api.dao.entity.Articolo;
+import it.rdev.blog.api.dao.entity.Stato;
+import it.rdev.blog.api.dao.entity.User;
 
 @Repository
 public interface ArticoloDAO extends CrudRepository<Articolo, Integer>{
@@ -19,20 +21,22 @@ public interface ArticoloDAO extends CrudRepository<Articolo, Integer>{
 	Set<Articolo> findAll();
 	
 	//cerca tramite autore
-	//@Query("SELECT a FROM Articolo a INNER JOIN a.autore aa WHERE aa.autore= :autore")
 	@Query("SELECT a FROM Articolo a WHERE a.autore= :autore")
 	Set<Articolo> findByAutore(@Param("autore")String autore);
 	
+	@Query("SELECT a FROM Articolo a WHERE a.autore= :autore AND a.stato= :stato")
+	Set<Articolo> findByAutoreNotPublish(@Param("autore")String autore, @Param("stato") Stato stato);
+	
 	//cerca tramite id
 	@Query("Select a from Articolo a where id = :id")
-	Articolo findById(long id);
+	Articolo findById(@Param("id")long id);
 	
 	//elimina tramite id
 	@Query("DELETE FROM Articolo a WHERE a.id = :idArticolo")
-	boolean deleteById(long idArticolo);
-	/*
+	boolean deleteById(@Param("idArticolo")long idArticolo);
+	
 	//elimina tramite id
-		@Query("DELETE FROM Articolo a WHERE a.id = :idArticolo")
-		boolean deleteById(long idArticolo);
-	 */
+	@Query("DELETE FROM Articolo a WHERE a.id = :idArticolo AND a.autore= :user")
+	boolean deleteByIdAndUser(long idArticolo, User user);
+	 
 }

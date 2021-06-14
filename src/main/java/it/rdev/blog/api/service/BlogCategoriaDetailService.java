@@ -31,7 +31,7 @@ public class BlogCategoriaDetailService {
 		return cDTO;
 	}
 	
-	//Pesca tutte le categorie nel db
+	//Pesca tutte le categorie dal db
 	public Set<CategoriaDTO> getAll(){
 		Set<Categoria> categorie= cDao.getAllCategories();
 		Set<CategoriaDTO> listaCategorie= new HashSet<>();
