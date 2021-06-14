@@ -8,7 +8,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import it.rdev.blog.api.dao.entity.Articolo;
+import it.rdev.blog.api.dao.entity.Categoria;
 import it.rdev.blog.api.dao.entity.Stato;
+import it.rdev.blog.api.dao.entity.Tag;
 import it.rdev.blog.api.dao.entity.User;
 
 @Repository
@@ -26,6 +28,14 @@ public interface ArticoloDAO extends CrudRepository<Articolo, Integer>{
 	
 	@Query("SELECT a FROM Articolo a WHERE a.autore= :autore AND a.stato= :stato")
 	Set<Articolo> findByAutoreNotPublish(@Param("autore")String autore, @Param("stato") Stato stato);
+	
+	//todo: fix with join
+	@Query("SELECT a FROM Articolo a WHERE a.categoria= :categoria")
+	Set<Articolo> findByCategory(@Param("categoria")Categoria categoria);
+	
+	//todo: fix with join
+	@Query("SELECT a FROM Articolo a WHERE a.tag= :tag")
+	Set<Articolo> findByTag(@Param("tag")Tag tag);
 	
 	//cerca tramite id
 	@Query("Select a from Articolo a where id = :id")

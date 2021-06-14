@@ -2,6 +2,7 @@ package it.rdev.blog.api.controller;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
@@ -18,7 +20,10 @@ import org.springframework.http.ResponseEntity;
 
 import it.rdev.blog.api.config.JwtTokenUtil;
 import it.rdev.blog.api.controller.dto.ArticoloDTO;
+import it.rdev.blog.api.dao.entity.Categoria;
+import it.rdev.blog.api.dao.entity.Tag;
 import it.rdev.blog.api.service.BlogArticoloDetailService;
+import it.rdev.blog.api.service.BlogCategoriaDetailService;
 
 @RestController
 @RequestMapping(value= "/api/articolo")
@@ -26,6 +31,8 @@ public class ArticoloController {
 
 		@Autowired
 		private BlogArticoloDetailService blogArticolo;
+		@Autowired
+		private BlogCategoriaDetailService blogCategoria;
 		@Autowired
 		private JwtTokenUtil jwtUtil;
 		
@@ -52,10 +59,39 @@ public class ArticoloController {
 		
 		// restituisce gli articoli di tutti gli utenti e i propri notpublish (se loggati) to fix
 		@RequestMapping(path = "", method = RequestMethod.GET)
-		@ResponseStatus(HttpStatus.OK)
-		public Set<ArticoloDTO> getArticoli(@RequestHeader(required = false, value = "Authorization") String token) {
+		public ResponseEntity<?> getArticoli(@RequestHeader(required = false, value = "Authorization") String token, @RequestParam(required = false) Set<String> parametri) {
 			Set<ArticoloDTO> lArticoli= new HashSet<>();
+			Iterator<String> p= parametri.iterator();
 			
+			int cont=0;
+			//DA OTTIMIZZARE: funziona solo in poche casistiche
+			while(p.hasNext()) {
+				if(p.equals("id")) {
+					
+					ArticoloDTO a= blogArticolo.findById(Integer.parseInt( p.next() ));
+					return new ResponseEntity<>(a, HttpStatus.OK);
+				}
+				if(p.equals("categoria")) {
+					Categoria c= new Categoria();
+					c.setNome(p.next());
+					lArticoli= blogArticolo.findByCategoria(c);
+					return new ResponseEntity<>(lArticoli, HttpStatus.OK);
+				}
+				if(p.equals("tag")) {
+					Tag t= new Tag();
+					t.setTag(p.next());
+					lArticoli= blogArticolo.findByTag(t);
+					return new ResponseEntity<>(lArticoli, HttpStatus.OK);
+				}
+				if(p.equals("autore")) {
+					lArticoli= blogArticolo.findByAutore(p.next());
+					return new ResponseEntity<>(lArticoli, HttpStatus.OK);
+				}
+				return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+			}
+			
+			
+			/*
 			if(token != null && token.startsWith("Bearer")) {
 				Long userId = jwtUtil.getUserIdFromToken(token);
 				
@@ -65,9 +101,10 @@ public class ArticoloController {
 				return lArticoli;
 				
 			}
+			*/
 			lArticoli= blogArticolo.findAll();
 			if(lArticoli == null) exce();
-			return lArticoli;
+			return new ResponseEntity<>(lArticoli, HttpStatus.OK);
 		
 		}
 		

@@ -11,7 +11,9 @@ import it.rdev.blog.api.controller.dto.ArticoloDTO;
 import it.rdev.blog.api.controller.dto.StatoDTO;
 import it.rdev.blog.api.dao.ArticoloDAO;
 import it.rdev.blog.api.dao.entity.Articolo;
+import it.rdev.blog.api.dao.entity.Categoria;
 import it.rdev.blog.api.dao.entity.Stato;
+import it.rdev.blog.api.dao.entity.Tag;
 import it.rdev.blog.api.dao.entity.User;
 
 @Service
@@ -121,6 +123,21 @@ public class BlogArticoloDetailService{
 		listaDto= entityToDTO(a);
 		Iterator<ArticoloDTO> i= listaDto.iterator();
 		return i.next();
+	}
+	
+	public Set<ArticoloDTO> findByCategoria(Categoria categoria) {
+		Set<ArticoloDTO> listaDto = new HashSet<>();
+		
+		listaDto= entityToDTO(aDao.findByCategory(categoria ));
+		return listaDto;
+		
+	}
+	public Set<ArticoloDTO> findByTag(Tag tag) {
+		Set<ArticoloDTO> listaDto = new HashSet<>();
+		
+		listaDto= entityToDTO(aDao.findByTag(tag));
+		return listaDto;
+		
 	}
 	
 	public Articolo save(ArticoloDTO articolo) {
