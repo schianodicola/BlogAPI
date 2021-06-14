@@ -10,7 +10,7 @@ import it.rdev.blog.api.dao.entity.Categoria;
 public interface CategoriaDAO extends CrudRepository<Categoria, Integer>{
 	
 	@Query("Select c From Categoria c")
-	Set<Categoria> getAllCategorie();
+	Set<Categoria> getAllCategories();
 	
 	//cerca tramite una categoria
 	Categoria findByNome(String categoria);
