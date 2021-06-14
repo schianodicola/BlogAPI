@@ -22,6 +22,13 @@ public class CategoriaController {
 	public Set<CategoriaDTO> get() {
 		
 		Set<CategoriaDTO> listaCategorie = blogCategoria.getAll();
+		if(listaCategorie == null) exce();
+		
 		return listaCategorie;
+	}
+	
+	@ResponseStatus(code = HttpStatus.NOT_FOUND)
+	public void exce() {
+		System.err.println("Categorie non presenti - error query");
 	}
 }

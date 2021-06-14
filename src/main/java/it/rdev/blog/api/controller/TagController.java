@@ -23,6 +23,12 @@ public class TagController {
 	public Set<TagDTO> getAllTag() {
 		
 		Set<TagDTO> listaTag = blogTag.getAll();
+		if(listaTag == null) exce();
 		return listaTag;
+	}
+	
+	@ResponseStatus(code = HttpStatus.NOT_FOUND)
+	public void exce() {
+		System.err.println("Tag non presenti - error query");
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,13 +45,49 @@ public class ArticoloController {
 				Long userId = jwtUtil.getUserIdFromToken(token);
 				
 				//modificare: dovrà restituire i propri articoli (pubblicati e non)
-				return (List<ArticoloDTO>) blogArticolo.findByAutore(token);
+				lArticoli= (List<ArticoloDTO>) blogArticolo.findByAutore(token);
+				if(lArticoli == null) exce();
+				return lArticoli;
 				
 			}
-			return (List<ArticoloDTO>) blogArticolo.findAll();
+			lArticoli= (List<ArticoloDTO>) blogArticolo.findAll();
+			if(lArticoli == null) exce();
+			return lArticoli;
 		
 		}
 		
+		//ricordati di fare altri controlli nel metodo
+		@RequestMapping(path = "/{idArticolo:\\d+}", method = RequestMethod.PUT)
+		@ResponseStatus(HttpStatus.NO_CONTENT)
+		public void put (
+				@RequestHeader(required = true, value = "Authorization") String token,
+				@PathVariable Integer idArticolo,
+				@RequestBody final ArticoloDTO articolo) {
+			
+			//salvo articolo
+			if(blogArticolo.save(articolo) == null) exce2();
+			
+		}
 		
+		@RequestMapping(path = "/{id:\\d+}", method = RequestMethod.DELETE)
+		@ResponseStatus(HttpStatus.NO_CONTENT)
+		public void delete (
+				@RequestHeader(required = true, value = "Authorization") String token,
+				@PathVariable Integer id) {
+			
+			if(blogArticolo.deleteByUser(id, 0)) exce2();
+			
+		}
+		
+		
+		@ResponseStatus(code = HttpStatus.NOT_FOUND)
+		public void exce() {
+			System.err.println("Articoli non presenti - error query");
+		}
+		
+		@ResponseStatus(code = HttpStatus.NOT_FOUND)
+		public void exce2() {
+			System.err.println("L'ID passato non è presente nel DB - error query");
+		}
 		
 }

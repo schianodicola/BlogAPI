@@ -123,4 +123,9 @@ public class BlogArticoloDetailService{
 		return i.next();
 	}
 	
+	public Articolo save(ArticoloDTO articolo) {
+		
+		return aDao.save(dtoToEntity(articolo) );
+	}
+	
 }
