@@ -17,5 +17,31 @@ public class Tag {
 	
 	@ManyToMany(mappedBy = "tags")
 	private Set<Articolo> articoli;
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+
+	public Set<Articolo> getArticoli() {
+		return articoli;
+	}
+
+	public void setArticoli(Set<Articolo> articoli) {
+		this.articoli = articoli;
+	}
+	
+	
 	
 }
