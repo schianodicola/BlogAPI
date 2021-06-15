@@ -29,14 +29,14 @@ public interface ArticoloDAO extends CrudRepository<Articolo, Integer>{
 	@Query("SELECT a FROM Articolo a WHERE a.autore= :autore AND a.stato= :stato")
 	Set<Articolo> findByAutoreNotPublish(@Param("autore")String autore, @Param("stato") Stato stato);
 	
-	//todo: cerca gli articoli di una determinata categoria
+	//Cerca gli articoli di una determinata categoria
 	@Query("SELECT a FROM Articolo a JOIN a.categoria c WHERE c.nome= :categoria")
 	Set<Articolo> findByCategory(@Param("categoria")Categoria categoria);
 	
 	//Cerca gli articoli di un determinato tag
 	@Query("SELECT a FROM Articolo a JOIN a.tags t WHERE t.tag= :tag")
 	Set<Articolo> findByTag(@Param("tag")Tag tag);
-	
+		
 	//cerca tramite id
 	@Query("Select a from Articolo a where id = :id")
 	Articolo findById(@Param("id")long id);

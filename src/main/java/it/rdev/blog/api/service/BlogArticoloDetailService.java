@@ -144,5 +144,7 @@ public class BlogArticoloDetailService{
 		
 		return aDao.save(dtoToEntity(articolo) );
 	}
+
+	
 	
 }

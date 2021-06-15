@@ -58,42 +58,57 @@ public class ArticoloController {
 			
 		}
 		
-		//TO FIX: with Map Collection in request param
-		//TODO: add other controlls
+		
+		//TODO: aggiungere filtro per utenti non loggati
 		// restituisce gli articoli di tutti gli utenti e i propri notpublish (se loggati)
 		@RequestMapping(path = "", method = RequestMethod.GET)
-		public ResponseEntity<?> getArticoli(@RequestHeader(required = false, value = "Authorization") String token, @RequestParam(required = false) Set<String> parametri) {
+		public ResponseEntity<?> getArticoli(@RequestHeader(required = false, value = "Authorization") String token, @RequestParam(required = false) Map<String, String> parametri) {
 			Set<ArticoloDTO> lArticoli= new HashSet<>();
+			ArticoloDTO a;
 			
-			
-			
-			Iterator<String> p= parametri.iterator();
-			int cont=0;
-			//DA OTTIMIZZARE: funziona solo in poche casistiche
-			while(p.hasNext()) {
-				if(p.equals("id")) {
-					
-					ArticoloDTO a= blogArticolo.findById(Integer.parseInt( p.next() ));
-					return new ResponseEntity<>(a, HttpStatus.OK);
+			boolean trovato=false;
+			if(parametri !=null) {
+				for(String p: parametri.keySet()) {
+					if(p.equals("id")) {
+						
+						a= blogArticolo.findById(Integer.parseInt( parametri.get(p) ));
+						lArticoli.add(a);
+						if(a!= null) trovato=true;
+	
+					}
+					if(p.equals("categoria")) {
+						Categoria c= new Categoria();
+						c.setNome(parametri.get(p));
+						lArticoli= blogArticolo.findByCategoria(c);
+						if(lArticoli!= null) trovato=true;
+						
+					}
+					if(p.equals("tag")) {
+						Tag t= new Tag();
+						t.setTag(parametri.get(p));
+						lArticoli= blogArticolo.findByTag(t);
+						if(lArticoli!= null) trovato=true;
+						
+					}
+					if(p.equals("autore")) {
+						lArticoli= blogArticolo.findByAutore(parametri.get(p));
+						if(lArticoli!= null) trovato=true;
+						
+					}
+					if(p.equals("testo")) {
+						if(parametri.get(p).length()>=3) {
+							lArticoli= blogArticolo.findXword(parametri.get(p));
+							if(lArticoli!= null) trovato=true;
+							
+						}
+						return new ResponseEntity<>("Errore - Immetti almeno 3 caratteri. ", HttpStatus.BAD_REQUEST);
+					}
+					//return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 				}
-				if(p.equals("categoria")) {
-					Categoria c= new Categoria();
-					c.setNome(p.next());
-					lArticoli= blogArticolo.findByCategoria(c);
-					return new ResponseEntity<>(lArticoli, HttpStatus.OK);
-				}
-				if(p.equals("tag")) {
-					Tag t= new Tag();
-					t.setTag(p.next());
-					lArticoli= blogArticolo.findByTag(t);
-					return new ResponseEntity<>(lArticoli, HttpStatus.OK);
-				}
-				if(p.equals("autore")) {
-					lArticoli= blogArticolo.findByAutore(p.next());
-					return new ResponseEntity<>(lArticoli, HttpStatus.OK);
-				}
+				if(trovato == true) return new ResponseEntity<>(lArticoli, HttpStatus.OK);
 				return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 			}
+			
 			
 			
 			/*
@@ -112,6 +127,7 @@ public class ArticoloController {
 			return new ResponseEntity<>(lArticoli, HttpStatus.OK);
 		
 		}
+		
 		
 		//ricordati di fare altri controlli nel metodo
 		@RequestMapping(path = "/{idArticolo:\\d+}", method = RequestMethod.PUT)
