@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,12 +58,16 @@ public class ArticoloController {
 			
 		}
 		
-		// restituisce gli articoli di tutti gli utenti e i propri notpublish (se loggati) to fix
+		//TO FIX: with Map Collection in request param
+		//TODO: add other controlls
+		// restituisce gli articoli di tutti gli utenti e i propri notpublish (se loggati)
 		@RequestMapping(path = "", method = RequestMethod.GET)
 		public ResponseEntity<?> getArticoli(@RequestHeader(required = false, value = "Authorization") String token, @RequestParam(required = false) Set<String> parametri) {
 			Set<ArticoloDTO> lArticoli= new HashSet<>();
-			Iterator<String> p= parametri.iterator();
 			
+			
+			
+			Iterator<String> p= parametri.iterator();
 			int cont=0;
 			//DA OTTIMIZZARE: funziona solo in poche casistiche
 			while(p.hasNext()) {
