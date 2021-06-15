@@ -27,9 +27,9 @@ CREATE TABLE IF NOT EXISTS articolo (
 
 
 CREATE TABLE IF NOT EXISTS tag (
-  nome varchar(20) NOT NULL,
+  tag varchar(20) NOT NULL,
   
-  PRIMARY KEY (nome)
+  PRIMARY KEY (tag)
 );
 
 CREATE TABLE IF NOT EXISTS articolo_tags (
@@ -67,7 +67,7 @@ ALTER TABLE articolo_tags
 ADD CONSTRAINT tag_fk1 FOREIGN KEY(id_articolo) REFERENCES articolo(id);
 
 ALTER TABLE articolo_tags
-ADD CONSTRAINT tag_fk2 FOREIGN KEY(id_tag) REFERENCES tag(nome);
+ADD CONSTRAINT tag_fk2 FOREIGN KEY(id_tag) REFERENCES tag(tag);
 
 ALTER TABLE stato
 ADD CONSTRAINT stato_fk1 FOREIGN KEY(id_articolo) REFERENCES articolo(id);

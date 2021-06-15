@@ -32,10 +32,10 @@ public class BlogTagDetailService {
 	
 	public Set<TagDTO> getAll() {
 		
-		Set<Tag> tag = (Set<Tag>) tDao.findAll();
+		Set<Tag> tag = tDao.getAllTag();
 		Set<TagDTO> listaTag = new HashSet<>();
-		listaTag= entityToDTO(tag);
 		
+		listaTag= entityToDTO(tag);
 		return listaTag;
 		
 	}

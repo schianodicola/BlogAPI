@@ -10,14 +10,12 @@ public class Tag {
 	
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
-	private long id;
-	
-	@Column
+	//@Column
 	private String tag;
 	
 	@ManyToMany(mappedBy = "tags")
 	private Set<Articolo> articoli;
-
+/*
 	public long getId() {
 		return id;
 	}
@@ -25,7 +23,7 @@ public class Tag {
 	public void setId(long id) {
 		this.id = id;
 	}
-
+*/
 	public String getTag() {
 		return tag;
 	}
