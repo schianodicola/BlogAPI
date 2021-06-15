@@ -1,5 +1,7 @@
 package it.rdev.blog.api.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import it.rdev.blog.api.config.JwtTokenUtil;
 import it.rdev.blog.api.controller.dto.ArticoloDTO;
 import it.rdev.blog.api.dao.entity.Categoria;
+import it.rdev.blog.api.dao.entity.Stato;
 import it.rdev.blog.api.dao.entity.Tag;
 import it.rdev.blog.api.service.BlogArticoloDetailService;
 import it.rdev.blog.api.service.BlogCategoriaDetailService;
@@ -129,26 +132,75 @@ public class ArticoloController {
 		}
 		
 		
-		//ricordati di fare altri controlli nel metodo
-		@RequestMapping(path = "/{idArticolo:\\d+}", method = RequestMethod.PUT)
-		@ResponseStatus(HttpStatus.NO_CONTENT)
-		public void put (
+		//Salva l'articolo in stato di bozza
+		@RequestMapping(path = "", method = RequestMethod.POST)
+		public ResponseEntity<?> post (
 				@RequestHeader(required = true, value = "Authorization") String token,
-				@PathVariable Integer idArticolo,
 				@RequestBody final ArticoloDTO articolo) {
 			
-			//salvo articolo
-			if(blogArticolo.save(articolo) == null) exce2();
+			if(token != null && token.startsWith("Bearer" ) && articolo!=null) {
+				Long userId = jwtUtil.getUserIdFromToken(token);
+				
+				//salvo articolo - in caso contrario, lancio l'errore
+				if(blogArticolo.save(articolo) == null) exce2();
+				else return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+			}
+			return new ResponseEntity<>(null, HttpStatus.OK);
 			
 		}
 		
+		//Modifica l'articolo
+		@RequestMapping(path = "/{idArticolo:\\d+}", method = RequestMethod.PUT)
+		public ResponseEntity<?> put (
+						@RequestHeader(required = true, value = "Authorization") String token,
+						@PathVariable Integer idAutore,
+						@RequestBody final ArticoloDTO articolo) {
+			
+			if(idAutore!=null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			if(blogArticolo.findById(articolo.getId()) == null) return new ResponseEntity<>("L'articolo che vuoi modificare non presente nel db", HttpStatus.NOT_FOUND);
+			
+			if(token != null && token.startsWith("Bearer" ) ) {
+				Long userId = jwtUtil.getUserIdFromToken(token);
+				
+				if(articolo.getAutore().getId() != idAutore) return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+				
+				articolo.getStato().setData_pubblicazione(LocalDateTime.now());
+				//salvo articolo
+				if(blogArticolo.save(articolo) == null) exce2();
+				else return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+			}
+					
+					
+			return null;			
+		}
+		
 		@RequestMapping(path = "/{id:\\d+}", method = RequestMethod.DELETE)
-		@ResponseStatus(HttpStatus.NO_CONTENT)
-		public void delete (
+		//@ResponseStatus(HttpStatus.NO_CONTENT)
+		public ResponseEntity<?> delete (
 				@RequestHeader(required = true, value = "Authorization") String token,
 				@PathVariable Integer id) {
 			
-			if(blogArticolo.deleteByUser(id, 0)) exce2();
+			//controllo se l'articolo è presente
+			if(blogArticolo.findById(id) == null) return new ResponseEntity<>("articolo non presente", HttpStatus.NOT_FOUND);
+				
+			if(token != null && token.startsWith("Bearer" ) ) {
+				Long userId = jwtUtil.getUserIdFromToken(token);
+				
+				if(blogArticolo.deleteByUser(id, userId)) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+				else return new ResponseEntity<>("errore query -oppure- non sei l'autore dell'articolo" , HttpStatus.FORBIDDEN);
+				
+			}
+			else {
+				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+			}
+
+			
 			
 		}
 		
