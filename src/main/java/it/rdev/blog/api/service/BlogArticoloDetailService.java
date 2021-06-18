@@ -110,7 +110,7 @@ public class BlogArticoloDetailService{
 	public Set<ArticoloDTO> findByAutoreNotPublish(String user, Stato stato){
 		Set<ArticoloDTO> listaDto = new HashSet<>();
 			
-		listaDto= entityToDTO(aDao.findByAutoreNotPublish(user, stato));
+		listaDto= entityToDTO(aDao.findByAutoreNotPublish(user, stato ));
 		return listaDto;
 						
 	}

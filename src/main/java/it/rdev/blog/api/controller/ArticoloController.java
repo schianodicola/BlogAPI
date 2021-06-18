@@ -67,8 +67,8 @@ public class ArticoloController {
 		@RequestMapping(path = "", method = RequestMethod.GET)
 		public ResponseEntity<?> getArticoli(@RequestHeader(required = false, value = "Authorization") String token, @RequestParam(required = false) Map<String, String> parametri) {
 			Set<ArticoloDTO> lArticoli= new HashSet<>();
-			ArticoloDTO a;
-			
+			ArticoloDTO a=null;
+			System.out.println("HELLO ");
 			boolean trovato=false;
 			if(parametri !=null) {
 				for(String p: parametri.keySet()) {
@@ -109,7 +109,7 @@ public class ArticoloController {
 					//return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 				}
 				if(trovato == true) return new ResponseEntity<>(lArticoli, HttpStatus.OK);
-				return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+				else return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 			}
 			
 			
@@ -125,6 +125,7 @@ public class ArticoloController {
 				
 			}
 			*/
+			System.out.println("CIAO ");
 			lArticoli= blogArticolo.findAll();
 			if(lArticoli == null) exce();
 			return new ResponseEntity<>(lArticoli, HttpStatus.OK);
@@ -180,6 +181,7 @@ public class ArticoloController {
 			return null;			
 		}
 		
+		//cancella l'articolo tramite un id
 		@RequestMapping(path = "/{id:\\d+}", method = RequestMethod.DELETE)
 		//@ResponseStatus(HttpStatus.NO_CONTENT)
 		public ResponseEntity<?> delete (
