@@ -2,6 +2,9 @@ package it.rdev.blog.api.dao.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,13 +13,17 @@ public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonIgnore
 	private long id;
 	@Column
 	private String username;
 	@Column
 	@JsonIgnore
 	private String password;
-
+	@OneToMany(mappedBy = "autore")
+	@JsonIgnore
+	private Set<Articolo> articoli = new HashSet<>();
+	
 	public long getId() {
 		return id;
 	}
@@ -42,4 +49,13 @@ public class User {
 		this.password = password;
 	}
 
+	public Set<Articolo> getArticoli() {
+		return articoli;
+	}
+
+	public void setArticoli(Set<Articolo> articoli) {
+		this.articoli = articoli;
+	}
+
+	
 }

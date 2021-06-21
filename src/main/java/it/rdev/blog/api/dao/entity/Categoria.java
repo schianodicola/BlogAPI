@@ -4,17 +4,21 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="categoria")
 public class Categoria {
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
+	@JsonIgnore
 	private long id;
 	
 	@Column(name="nome", length= 20, nullable=false)
 	private String nome;
 	
 	@OneToMany(mappedBy="categoria")
+	@JsonIgnore
 	private Set<Articolo> articoli;
 
 	public long getId() {

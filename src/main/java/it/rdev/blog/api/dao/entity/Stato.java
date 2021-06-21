@@ -4,16 +4,20 @@ import java.time.LocalDateTime;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "stato")
 public class Stato {
 	
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
+	@JsonIgnore
 	private long id;
 	
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="id_articolo", nullable=true)
+	@JsonIgnore
 	private Articolo articolo;
 	
 	@Column

@@ -28,10 +28,5 @@ public class TagController {
 		else return new ResponseEntity<>("Non esistono tag", HttpStatus.NOT_FOUND);
 	}
 	
-	/*
-	@ResponseStatus(code = HttpStatus.NOT_FOUND)
-	public void exce() {
-		System.err.println("Tag non presenti - error query");
-	}
-	*/
+	
 }

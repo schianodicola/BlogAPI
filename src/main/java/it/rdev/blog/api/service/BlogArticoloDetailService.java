@@ -36,6 +36,7 @@ public class BlogArticoloDetailService{
 		for(Articolo a: art) {
 			ArticoloDTO articoloDTO = new ArticoloDTO();
 			
+			articoloDTO.setId(a.getId());
 			articoloDTO.setTitolo(a.getTitolo());
 			articoloDTO.setSottotitolo(a.getSottotitolo());
 			articoloDTO.setTesto(a.getTesto());
@@ -47,6 +48,7 @@ public class BlogArticoloDetailService{
 			//articoloDTO.setDataPubblicazione(a.getStato().getDataPubblicazione());
 			articoloDTO.setStato(a.getStato());
 			
+			aDTO.add(articoloDTO);
 		}
 		
 		return aDTO;
@@ -119,23 +121,28 @@ public class BlogArticoloDetailService{
 		Set<ArticoloDTO> listaDto = new HashSet<>();
 		Set<Articolo> a= new HashSet<>();
 		a.add(aDao.findById(id));
-		
+		//System.out.println("" +a.toString());
 		listaDto= entityToDTO(a);
-		Iterator<ArticoloDTO> i= listaDto.iterator();
-		return i.next();
+		
+		//Iterator<ArticoloDTO> i= listaDto.iterator();
+		//art=listaDto.iterator().next();
+		//return i.next();
+		System.out.println("LISTA DTO Piena? "+listaDto.iterator().hasNext());
+		return listaDto.iterator().next();
+		
 	}
 	
 	public Set<ArticoloDTO> findByCategoria(Categoria categoria) {
 		Set<ArticoloDTO> listaDto = new HashSet<>();
 		
-		listaDto= entityToDTO(aDao.findByCategory(categoria ));
+		listaDto= entityToDTO(aDao.findByCategory(categoria.getNome() ));
 		return listaDto;
 		
 	}
 	public Set<ArticoloDTO> findByTag(Tag tag) {
 		Set<ArticoloDTO> listaDto = new HashSet<>();
 		
-		listaDto= entityToDTO(aDao.findByTag(tag));
+		listaDto= entityToDTO(aDao.findByTag(tag.getTag()));
 		return listaDto;
 		
 	}

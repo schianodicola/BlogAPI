@@ -16,7 +16,7 @@ import it.rdev.blog.api.service.bean.BlogUserDetails;
 
 @Service
 public class BlogUserDetailsService implements UserDetailsService {
-	
+	@Autowired
 	private UserDao userDao;
 
 	@Autowired

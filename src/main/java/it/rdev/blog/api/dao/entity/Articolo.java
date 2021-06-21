@@ -39,6 +39,7 @@ public class Articolo {
 	private LocalDateTime dataUltimaModifica;
 	@Column
 	private LocalDateTime dataCreazione;
+	
 	public long getId() {
 		return id;
 	}
@@ -100,6 +101,13 @@ public class Articolo {
 	public void setDataCreazione(LocalDateTime dataCreazione) {
 		this.dataCreazione = dataCreazione;
 	}
+	@Override
+	public String toString() {
+		return "Articolo [id=" + id + ", titolo=" + titolo + ", sottotitolo=" + sottotitolo + ", testo=" + testo
+				+ ", categoria=" + categoria + ", autore=" + autore + ", tags=" + tags + ", stato=" + stato
+				+ ", dataUltimaModifica=" + dataUltimaModifica + ", dataCreazione=" + dataCreazione + "]";
+	}
+	
 	
 	
 }

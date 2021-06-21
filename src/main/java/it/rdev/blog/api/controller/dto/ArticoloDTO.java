@@ -11,7 +11,7 @@ import it.rdev.blog.api.dao.entity.User;
 
 public class ArticoloDTO {
 	
-	private Integer id;
+	private long id;
 	private String titolo;
 	private String sottotitolo;
 	private String testo;
@@ -26,10 +26,10 @@ public class ArticoloDTO {
 	
 	
 	
-	public Integer getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(Integer id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getTitolo() {
@@ -93,6 +93,12 @@ public class ArticoloDTO {
 	}
 	public void setStato(Stato stato) {
 		this.stato = stato;
+	}
+	@Override
+	public String toString() {
+		return "ArticoloDTO [id=" + id + ", titolo=" + titolo + ", sottotitolo=" + sottotitolo + ", testo=" + testo
+				+ ", autore=" + autore + ", dataUltimaModifica=" + dataUltimaModifica + ", dataCreazione="
+				+ dataCreazione + ", categoria=" + categoria + ", stato=" + stato + ", tags=" + tags + "]";
 	}
 	
 	

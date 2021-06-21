@@ -1,8 +1,11 @@
 package it.rdev.blog.api.dao.entity;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tag")
@@ -10,20 +13,19 @@ public class Tag {
 	
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
-	//@Column
 	private String tag;
 	
 	@ManyToMany(mappedBy = "tags")
-	private Set<Articolo> articoli;
-/*
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-*/
+	@JsonIgnore
+	private Set<Articolo> articoli= new HashSet<>();
+	/*
+	@ManyToMany
+	@JoinTable(name="articolotag",
+				joinColumns = @JoinColumn(name="id_articolo"),
+				inverseJoinColumns =  @JoinColumn(name="id_tag") )
+    private Set<Articolo> articoli = new HashSet<>();
+	*/
+	
 	public String getTag() {
 		return tag;
 	}

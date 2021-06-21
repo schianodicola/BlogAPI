@@ -16,8 +16,9 @@ import it.rdev.blog.api.dao.entity.User;
 @Repository
 public interface ArticoloDAO extends CrudRepository<Articolo, Integer>{
 	
-	@Query("SELECT a FROM Articolo a WHERE a.titolo like :titolo OR a.sottotitolo like :titolo OR a.testo like :titolo")
-	Set<Articolo> findPerWord(@Param("titolo") String word);
+	
+	@Query("SELECT a FROM Articolo a WHERE a.titolo LIKE %:titolo% OR a.sottotitolo LIKE %:titolo% OR a.testo LIKE %:titolo%")
+	Set<Articolo> findPerWord(@Param("titolo") String titolo);
 	
 	@Query("SELECT a FROM Articolo a")
 	Set<Articolo> findAll();
@@ -34,13 +35,19 @@ public interface ArticoloDAO extends CrudRepository<Articolo, Integer>{
 	@Query("SELECT a FROM Articolo a JOIN a.autore aa JOIN a.stato ast WHERE aa.autore= :autore AND ast.articolo= :stato")
 	Set<Articolo> findByAutoreNotPublish(@Param("autore")String autore, @Param("stato") long stato);
 	*/
+	
+	//Cerca gli articoli di una determinata categoria
+	@Query("SELECT a FROM Articolo a JOIN a.categoria c WHERE c.nome= :categoria")
+	Set<Articolo> findByCategory(@Param("categoria")String categoria);
+	/*
 	//Cerca gli articoli di una determinata categoria
 	@Query("SELECT a FROM Articolo a JOIN a.categoria c WHERE c.nome= :categoria")
 	Set<Articolo> findByCategory(@Param("categoria")Categoria categoria);
+	*/
 	
 	//Cerca gli articoli di un determinato tag
 	@Query("SELECT a FROM Articolo a JOIN a.tags t WHERE t.tag= :tag")
-	Set<Articolo> findByTag(@Param("tag")Tag tag);
+	Set<Articolo> findByTag(@Param("tag")String tag);
 		
 	//cerca tramite id
 	@Query("Select a from Articolo a where id = :id")

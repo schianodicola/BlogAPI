@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.jsonwebtoken.ExpiredJwtException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -28,6 +32,8 @@ import it.rdev.blog.api.dao.entity.Stato;
 import it.rdev.blog.api.dao.entity.Tag;
 import it.rdev.blog.api.service.BlogArticoloDetailService;
 import it.rdev.blog.api.service.BlogCategoriaDetailService;
+
+
 
 @RestController
 @RequestMapping(value= "/api/articolo")
@@ -42,20 +48,28 @@ public class ArticoloController {
 		
 		//Restituisce l'articolo di un determinato id
 		//se è not publish, restituisce error 404, almeno che non sia l'autore dell'articolo
-		@RequestMapping(path = "/{id:\\d+}", method = RequestMethod.GET)
-		@ResponseStatus(HttpStatus.OK)
-		public ResponseEntity<ArticoloDTO> getById(@PathVariable Integer id, @RequestHeader(required = false, value = "Authorization") String token) {
+		@RequestMapping(path = "{id:\\d+}", method = RequestMethod.GET)
+		public ResponseEntity<?> getById(@PathVariable long id, @RequestHeader(required = false, value = "Authorization") String token) {
+			
+			System.out.println("getById - id: "+ id);
 			
 			ArticoloDTO articolo = blogArticolo.findById(id);
-			ResponseEntity<ArticoloDTO> status = null;
-			if(articolo!= null && articolo.getStato().getDataPubblicazione()== null) {
+			//System.out.println("ARTICOLO: "+articolo.toString());
+			ResponseEntity<?> status = null;
+			if(articolo!= null && articolo.getStato()!= null) {
+				System.out.println("TOKEN: "+ token);
 				if(token != null && token.startsWith("Bearer")) {
+					token = token.replaceAll("Bearer ", "");
 					Long userId = jwtUtil.getUserIdFromToken(token);
 					
+					//System.out.println("USERid: "+ userId);
 					if(articolo.getAutore().getId()== userId) status = new ResponseEntity<>(articolo, HttpStatus.OK);
-					else status = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+					else status = new ResponseEntity<>("[getById] Non hai i diritti di accesso", HttpStatus.NOT_FOUND);
 				}
 				
+			}
+			else {
+				status = new ResponseEntity<>("[getById] Articolo non trovato/pubblicato ", HttpStatus.NOT_FOUND);
 			}
 			return status;
 			
@@ -66,15 +80,20 @@ public class ArticoloController {
 		// restituisce gli articoli di tutti gli utenti e i propri notpublish (se loggati)
 		@RequestMapping(path = "", method = RequestMethod.GET)
 		public ResponseEntity<?> getArticoli(@RequestHeader(required = false, value = "Authorization") String token, @RequestParam(required = false) Map<String, String> parametri) {
+			
 			Set<ArticoloDTO> lArticoli= new HashSet<>();
 			ArticoloDTO a=null;
-			System.out.println("HELLO ");
+			System.out.println("Sono in [getArticoli()] ");
+			
 			boolean trovato=false;
-			if(parametri !=null) {
+			if(parametri !=null && !parametri.isEmpty()) {
+				System.out.println("PARAMETRI NON NULLI ");
 				for(String p: parametri.keySet()) {
+					System.out.println("Param " + parametri.keySet());
 					if(p.equals("id")) {
-						
-						a= blogArticolo.findById(Integer.parseInt( parametri.get(p) ));
+						//System.out.println("PARAMETRO = ID ");
+						a= blogArticolo.findById(Long.parseLong( parametri.get(p) ));
+						//System.out.println("ARTICOLO :" + a.toString());
 						lArticoli.add(a);
 						if(a!= null) trovato=true;
 	
@@ -82,52 +101,67 @@ public class ArticoloController {
 					if(p.equals("categoria")) {
 						Categoria c= new Categoria();
 						c.setNome(parametri.get(p));
-						lArticoli= blogArticolo.findByCategoria(c);
+						
+						lArticoli.addAll( blogArticolo.findByCategoria(c) );
+						//System.out.println("ARTICOLO :" + c.toString());
 						if(lArticoli!= null) trovato=true;
 						
 					}
 					if(p.equals("tag")) {
 						Tag t= new Tag();
 						t.setTag(parametri.get(p));
-						lArticoli= blogArticolo.findByTag(t);
+						
+						lArticoli.addAll( blogArticolo.findByTag(t));
 						if(lArticoli!= null) trovato=true;
 						
 					}
 					if(p.equals("autore")) {
-						lArticoli= blogArticolo.findByAutore(parametri.get(p));
+						
+						lArticoli.addAll( blogArticolo.findByAutore(parametri.get(p)) );
 						if(lArticoli!= null) trovato=true;
 						
 					}
 					if(p.equals("testo")) {
 						if(parametri.get(p).length()>=3) {
-							lArticoli= blogArticolo.findXword(parametri.get(p));
-							if(lArticoli!= null) trovato=true;
+							
+							lArticoli.addAll( blogArticolo.findXword(parametri.get(p)) );
+							if(!lArticoli.isEmpty()) trovato=true;
 							
 						}
-						return new ResponseEntity<>("Errore - Immetti almeno 3 caratteri. ", HttpStatus.BAD_REQUEST);
+						else return new ResponseEntity<>("Errore - Immetti almeno 3 caratteri. ", HttpStatus.BAD_REQUEST);
 					}
-					//return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+					
 				}
+				
+				Long userId = null;
+				if(token != null && token.startsWith("Bearer")) {
+					
+					token = token.replaceAll("Bearer ", "");
+					try {
+						 userId = jwtUtil.getUserIdFromToken(token);
+						 
+					}catch (ExpiredJwtException e) {
+						// TODO: handle exception
+					}
+					
+					long uId = userId.longValue();
+					lArticoli.removeIf(s -> s.getStato()== null && s.getAutore().getId()!=uId);
+					
+				}
+				else{
+					lArticoli.removeIf(s -> s.getStato()== null );
+				}
+				
 				if(trovato == true) return new ResponseEntity<>(lArticoli, HttpStatus.OK);
-				else return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+				else return new ResponseEntity<>("[getArticoli] Non ho trovato articoli", HttpStatus.NOT_FOUND);
 			}
 			
 			
 			
-			/*
-			if(token != null && token.startsWith("Bearer")) {
-				Long userId = jwtUtil.getUserIdFromToken(token);
-				
-				//modificare: dovrà restituire i propri articoli (pubblicati e non)
-				lArticoli= blogArticolo.findByAutore(token);
-				if(lArticoli == null) exce();
-				return lArticoli;
-				
-			}
-			*/
-			System.out.println("CIAO ");
+			
+			
 			lArticoli= blogArticolo.findAll();
-			if(lArticoli == null) exce();
+			if(lArticoli == null) return new ResponseEntity<>("[getArticoli] Non ho trovato articoli", HttpStatus.NOT_FOUND);
 			return new ResponseEntity<>(lArticoli, HttpStatus.OK);
 		
 		}
@@ -139,17 +173,18 @@ public class ArticoloController {
 				@RequestHeader(required = true, value = "Authorization") String token,
 				@RequestBody final ArticoloDTO articolo) {
 			
-			if(token != null && token.startsWith("Bearer" ) && articolo!=null) {
+			if(articolo==null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			if(token != null && token.startsWith("Bearer" ) ) {
 				Long userId = jwtUtil.getUserIdFromToken(token);
 				
 				//salvo articolo - in caso contrario, lancio l'errore
-				if(blogArticolo.save(articolo) == null) exce2();
-				else return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+				if(blogArticolo.save(articolo) != null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+				else return new ResponseEntity<>("Articolo non inserito", HttpStatus.METHOD_FAILURE);
 			}
 			else {
 				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
 			}
-			return new ResponseEntity<>(null, HttpStatus.OK);
+			
 			
 		}
 		
@@ -170,20 +205,17 @@ public class ArticoloController {
 				
 				articolo.getStato().setData_pubblicazione(LocalDateTime.now());
 				//salvo articolo
-				if(blogArticolo.save(articolo) == null) exce2();
+				if(blogArticolo.save(articolo) == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 				else return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 			}
 			else {
 				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
 			}
-					
-					
-			return null;			
+			
 		}
 		
 		//cancella l'articolo tramite un id
 		@RequestMapping(path = "/{id:\\d+}", method = RequestMethod.DELETE)
-		//@ResponseStatus(HttpStatus.NO_CONTENT)
 		public ResponseEntity<?> delete (
 				@RequestHeader(required = true, value = "Authorization") String token,
 				@PathVariable Integer id) {
@@ -206,15 +238,5 @@ public class ArticoloController {
 			
 		}
 		
-		
-		@ResponseStatus(code = HttpStatus.NOT_FOUND)
-		public void exce() {
-			System.err.println("Articoli non presenti - error query");
-		}
-		
-		@ResponseStatus(code = HttpStatus.NOT_FOUND)
-		public void exce2() {
-			System.err.println("L'ID passato non è presente nel DB - error query");
-		}
 		
 }
