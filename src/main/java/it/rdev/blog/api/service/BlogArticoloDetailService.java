@@ -108,6 +108,7 @@ public class BlogArticoloDetailService{
 		
 	}
 	
+	/*
 	//cerca tramite autore gli articoli pubblicati e non
 	public Set<ArticoloDTO> findByAutoreNotPublish(String user, Stato stato){
 		Set<ArticoloDTO> listaDto = new HashSet<>();
@@ -116,6 +117,7 @@ public class BlogArticoloDetailService{
 		return listaDto;
 						
 	}
+	*/
 	
 	public ArticoloDTO findById(long id) {
 		Set<ArticoloDTO> listaDto = new HashSet<>();

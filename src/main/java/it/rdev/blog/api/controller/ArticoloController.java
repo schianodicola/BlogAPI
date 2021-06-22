@@ -41,8 +41,8 @@ public class ArticoloController {
 
 		@Autowired
 		private BlogArticoloDetailService blogArticolo;
-		@Autowired
-		private BlogCategoriaDetailService blogCategoria;
+		//@Autowired
+		//private BlogCategoriaDetailService blogCategoria;
 		@Autowired
 		private JwtTokenUtil jwtUtil;
 		
@@ -56,14 +56,16 @@ public class ArticoloController {
 			ArticoloDTO articolo = blogArticolo.findById(id);
 			//System.out.println("ARTICOLO: "+articolo.toString());
 			ResponseEntity<?> status = null;
-			if(articolo!= null && articolo.getStato()!= null) {
-				System.out.println("TOKEN: "+ token);
+			if(articolo!= null ) {
+				//ADD TRY
+				System.out.println("TOKEN: "+ token); 
 				if(token != null && token.startsWith("Bearer")) {
 					token = token.replaceAll("Bearer ", "");
 					Long userId = jwtUtil.getUserIdFromToken(token);
 					
 					//System.out.println("USERid: "+ userId);
-					if(articolo.getAutore().getId()== userId) status = new ResponseEntity<>(articolo, HttpStatus.OK);
+					if(articolo.getStato()!= null) status = new ResponseEntity<>(articolo, HttpStatus.OK);
+					else if(articolo.getStato()== null && articolo.getAutore().getId()== userId) status = new ResponseEntity<>(articolo, HttpStatus.OK);
 					else status = new ResponseEntity<>("[getById] Non hai i diritti di accesso", HttpStatus.NOT_FOUND);
 				}
 				
@@ -76,7 +78,7 @@ public class ArticoloController {
 		}
 		
 		
-		//TODO: aggiungere filtro per utenti non loggati
+		//TODO: Ottimizzare - troppo codice duplicato
 		// restituisce gli articoli di tutti gli utenti e i propri notpublish (se loggati)
 		@RequestMapping(path = "", method = RequestMethod.GET)
 		public ResponseEntity<?> getArticoli(@RequestHeader(required = false, value = "Authorization") String token, @RequestParam(required = false) Map<String, String> parametri) {
@@ -86,6 +88,7 @@ public class ArticoloController {
 			System.out.println("Sono in [getArticoli()] ");
 			
 			boolean trovato=false;
+			Long userId = 0L;
 			if(parametri !=null && !parametri.isEmpty()) {
 				System.out.println("PARAMETRI NON NULLI ");
 				for(String p: parametri.keySet()) {
@@ -133,7 +136,9 @@ public class ArticoloController {
 					
 				}
 				
-				Long userId = null;
+			
+				
+				//Long userId = 0L;
 				if(token != null && token.startsWith("Bearer")) {
 					
 					token = token.replaceAll("Bearer ", "");
@@ -141,15 +146,16 @@ public class ArticoloController {
 						 userId = jwtUtil.getUserIdFromToken(token);
 						 
 					}catch (ExpiredJwtException e) {
-						// TODO: handle exception
+						System.err.println("TOKEN Scaduto! ");
 					}
 					
 					long uId = userId.longValue();
 					lArticoli.removeIf(s -> s.getStato()== null && s.getAutore().getId()!=uId);
-					
+					System.out.println("RIMUOVO ALCUNE BOZZE: " + uId);
 				}
 				else{
 					lArticoli.removeIf(s -> s.getStato()== null );
+					System.out.println("RIMUOVO LE BOZZE ");
 				}
 				
 				if(trovato == true) return new ResponseEntity<>(lArticoli, HttpStatus.OK);
@@ -162,6 +168,18 @@ public class ArticoloController {
 			
 			lArticoli= blogArticolo.findAll();
 			if(lArticoli == null) return new ResponseEntity<>("[getArticoli] Non ho trovato articoli", HttpStatus.NOT_FOUND);
+			System.out.println("USERID: " + userId);
+			
+			if(token != null && token.startsWith("Bearer")) {
+				token = token.replaceAll("Bearer ", "");
+				userId = jwtUtil.getUserIdFromToken(token);
+				
+			}
+			//if(userId != 0L) {
+			long uId= userId.longValue();
+			lArticoli.removeIf(s -> s.getStato()== null && s.getAutore().getId()!=uId);
+			System.out.println("RIMUOVO ALCUNE BOZZE2: " + uId);
+			//}
 			return new ResponseEntity<>(lArticoli, HttpStatus.OK);
 		
 		}
@@ -175,11 +193,20 @@ public class ArticoloController {
 			
 			if(articolo==null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 			if(token != null && token.startsWith("Bearer" ) ) {
-				Long userId = jwtUtil.getUserIdFromToken(token);
+				token = token.replaceAll("Bearer ", "");
+				try {
+					Long userId = jwtUtil.getUserIdFromToken(token);
+					articolo.getAutore().setId(userId);
+					System.out.println("UserID: "+ userId);
+				}catch (ExpiredJwtException e) {
+					System.err.println("TOKEN Scaduto! ");
+				}
+				//articolo.getAutore().setId(userId);
 				
 				//salvo articolo - in caso contrario, lancio l'errore
-				if(blogArticolo.save(articolo) != null) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-				else return new ResponseEntity<>("Articolo non inserito", HttpStatus.METHOD_FAILURE);
+				if(blogArticolo.save(articolo) != null) return new ResponseEntity<>("Articolo Salvato!", HttpStatus.NO_CONTENT);
+				//else return new ResponseEntity<>("Articolo non inserito", HttpStatus.METHOD_FAILURE);
+				else return new ResponseEntity<>("Articolo non inserito", HttpStatus.OK);
 			}
 			else {
 				return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
@@ -199,6 +226,7 @@ public class ArticoloController {
 			if(blogArticolo.findById(articolo.getId()) == null) return new ResponseEntity<>("L'articolo che vuoi modificare non presente nel db", HttpStatus.NOT_FOUND);
 			
 			if(token != null && token.startsWith("Bearer" ) ) {
+				token = token.replaceAll("Bearer ", "");
 				Long userId = jwtUtil.getUserIdFromToken(token);
 				
 				if(articolo.getAutore().getId() != idAutore) return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
@@ -224,6 +252,7 @@ public class ArticoloController {
 			if(blogArticolo.findById(id) == null) return new ResponseEntity<>("articolo non presente", HttpStatus.NOT_FOUND);
 				
 			if(token != null && token.startsWith("Bearer" ) ) {
+				token = token.replaceAll("Bearer ", "");
 				Long userId = jwtUtil.getUserIdFromToken(token);
 				
 				if(blogArticolo.deleteByUser(id, userId)) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
