@@ -23,7 +23,7 @@ public class Articolo {
 	@JoinColumn(name="id_categoria", referencedColumnName = "id")
 	private Categoria categoria;
 	@ManyToOne
-	@JoinColumn(name="id_autore", referencedColumnName = "id")
+	@JoinColumn(name="id_autore", referencedColumnName = "id", nullable=false)
 	private User autore;
 	@ManyToMany
 	@JoinTable(name="articolo_tags",

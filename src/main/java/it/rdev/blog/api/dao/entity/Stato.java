@@ -16,7 +16,7 @@ public class Stato {
 	private long id;
 	
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="id_articolo", nullable=true)
+	@JoinColumn(name="id_articolo")
 	@JsonIgnore
 	private Articolo articolo;
 	

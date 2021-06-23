@@ -27,9 +27,12 @@ import org.springframework.http.ResponseEntity;
 
 import it.rdev.blog.api.config.JwtTokenUtil;
 import it.rdev.blog.api.controller.dto.ArticoloDTO;
+import it.rdev.blog.api.controller.dto.StatoDTO;
+import it.rdev.blog.api.dao.entity.Articolo;
 import it.rdev.blog.api.dao.entity.Categoria;
 import it.rdev.blog.api.dao.entity.Stato;
 import it.rdev.blog.api.dao.entity.Tag;
+import it.rdev.blog.api.dao.entity.User;
 import it.rdev.blog.api.service.BlogArticoloDetailService;
 import it.rdev.blog.api.service.BlogCategoriaDetailService;
 
@@ -192,16 +195,16 @@ public class ArticoloController {
 				@RequestBody final ArticoloDTO articolo) {
 			
 			if(articolo==null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			System.out.println(articolo.toString()+ " "+ articolo.getAutore().toString() + " IDuserArticolo: "+ articolo.getAutore().getId());
+			
 			if(token != null && token.startsWith("Bearer" ) ) {
 				token = token.replaceAll("Bearer ", "");
-				try {
-					Long userId = jwtUtil.getUserIdFromToken(token);
-					articolo.getAutore().setId(userId);
-					System.out.println("UserID: "+ userId);
-				}catch (ExpiredJwtException e) {
-					System.err.println("TOKEN Scaduto! ");
-				}
-				//articolo.getAutore().setId(userId);
+				Long userId = jwtUtil.getUserIdFromToken(token);
+				
+				articolo.getAutore().setId(userId);
+				System.out.println("UserID: "+ userId);
+				//System.out.println("UserID: "+ articolo.getAutore().getId());
+				
 				
 				//salvo articolo - in caso contrario, lancio l'errore
 				if(blogArticolo.save(articolo) != null) return new ResponseEntity<>("Articolo Salvato!", HttpStatus.NO_CONTENT);
@@ -216,22 +219,26 @@ public class ArticoloController {
 		}
 		
 		//Modifica l'articolo
-		@RequestMapping(path = "/{idArticolo:\\d+}", method = RequestMethod.PUT)
+		@RequestMapping(path = "{idArticolo:\\d+}", method = RequestMethod.PUT)
 		public ResponseEntity<?> put (
+						@PathVariable long idArticolo,
 						@RequestHeader(required = true, value = "Authorization") String token,
-						@PathVariable Integer idAutore,
 						@RequestBody final ArticoloDTO articolo) {
 			
-			if(idAutore!=null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-			if(blogArticolo.findById(articolo.getId()) == null) return new ResponseEntity<>("L'articolo che vuoi modificare non presente nel db", HttpStatus.NOT_FOUND);
+			if(articolo==null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			ArticoloDTO a=blogArticolo.findById(idArticolo);
+			if(blogArticolo.findById(idArticolo) == null) return new ResponseEntity<>("L'articolo che vuoi modificare non presente nel db", HttpStatus.NOT_FOUND);
 			
 			if(token != null && token.startsWith("Bearer" ) ) {
 				token = token.replaceAll("Bearer ", "");
 				Long userId = jwtUtil.getUserIdFromToken(token);
 				
-				if(articolo.getAutore().getId() != idAutore) return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+				//System.out.println("IdAutoreArticolo: " + articolo.getAutore().getId() +" - IDdb: " + a.getAutore().getId());
+				if(a.getAutore().getId() != userId) return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
 				
-				articolo.getStato().setData_pubblicazione(LocalDateTime.now());
+				articolo.setAutore(a.getAutore()); //funziona
+				
+				//TODO: debug, crea un secondo articolo con le nuove informazioni
 				//salvo articolo
 				if(blogArticolo.save(articolo) == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 				else return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
@@ -255,7 +262,7 @@ public class ArticoloController {
 				token = token.replaceAll("Bearer ", "");
 				Long userId = jwtUtil.getUserIdFromToken(token);
 				
-				if(blogArticolo.deleteByUser(id, userId)) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+				if(blogArticolo.deleteByUser(id, userId)>0) return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 				else return new ResponseEntity<>("errore query -oppure- non sei l'autore dell'articolo" , HttpStatus.FORBIDDEN);
 				
 			}

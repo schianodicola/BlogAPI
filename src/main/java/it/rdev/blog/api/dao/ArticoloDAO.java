@@ -2,10 +2,12 @@ package it.rdev.blog.api.dao;
 
 import java.util.Set;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.rdev.blog.api.dao.entity.Articolo;
 import it.rdev.blog.api.dao.entity.Categoria;
@@ -52,8 +54,10 @@ public interface ArticoloDAO extends CrudRepository<Articolo, Integer>{
 	@Query("DELETE FROM Articolo a WHERE a.id = :idArticolo")
 	boolean deleteById(@Param("idArticolo")long idArticolo);
 	
-	//elimina tramite id
+	//elimina tramite id e autore
+	@Transactional
+	@Modifying
 	@Query("DELETE FROM Articolo a WHERE a.id = :idArticolo AND a.autore= :user")
-	boolean deleteByIdAndUser(@Param("idArticolo")long idArticolo, @Param("user")User user);
+	int deleteByIdAndUser(@Param("idArticolo")long idArticolo, @Param("user")User user);
 	 
 }

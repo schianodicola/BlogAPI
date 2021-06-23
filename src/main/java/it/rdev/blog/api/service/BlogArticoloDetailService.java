@@ -74,10 +74,11 @@ public class BlogArticoloDetailService{
 		a.setTitolo(aDTO.getTitolo());
 		a.setSottotitolo(aDTO.getSottotitolo());
 		a.setTesto(aDTO.getTesto());
-		//a.setDataPubblicazione(aDTO.getStato().getDataPubblicazione());
 		a.setDataUltimaModifica(aDTO.getDataUltimaModifica());
 		a.setDataCreazione(aDTO.getDataCreazione());
-		a.setStato(aDTO.getStato());
+		a.setAutore(aDTO.getAutore());
+		//a.setCategoria(aDTO.getCategoria());
+		//a.setStato(aDTO.getStato());
 		
 		return a;
 	}
@@ -92,7 +93,7 @@ public class BlogArticoloDetailService{
 		return aDao.deleteById(id);
 		
 	}
-	public boolean deleteByUser(long idArticolo, long idAutore) {
+	public int deleteByUser(long idArticolo, long idAutore) {
 		User autore= new User();
 		autore.setId(idAutore);
 		return aDao.deleteByIdAndUser(idArticolo, autore);
