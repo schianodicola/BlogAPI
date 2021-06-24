@@ -79,3 +79,6 @@ CREATE TABLE IF NOT EXISTS stato (
 -- ALTER TABLE stato
 -- ADD CONSTRAINT stato_fk1 FOREIGN KEY(id_articolo) REFERENCES articolo(id);
 
+
+-- INSERT FOR TEST
+INSERT INTO categoria (nome) VALUES('Hardware');

@@ -237,8 +237,8 @@ public class ArticoloController {
 				if(a.getAutore().getId() != userId) return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
 				
 				articolo.setAutore(a.getAutore()); //funziona
+				articolo.setId(a.getId());
 				
-				//TODO: debug, crea un secondo articolo con le nuove informazioni
 				//salvo articolo
 				if(blogArticolo.save(articolo) == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 				else return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
