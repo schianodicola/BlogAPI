@@ -26,6 +26,7 @@ public class BlogCategoriaDetailService {
 			
 			CategoriaDTO catDTO = new CategoriaDTO();
 			catDTO.setNome(c.getNome());
+			catDTO.setId(c.getId());
 			cDTO.add(catDTO);
 		} 
 		return cDTO;
@@ -40,4 +41,14 @@ public class BlogCategoriaDetailService {
 		return listaCategorie;
 		
 	}
+	
+	public CategoriaDTO getCategoria(String nome) {
+		Set<Categoria> c= new HashSet<>();
+		c.add( cDao.getCategoria(nome) );
+		if(c.isEmpty()) return null;
+		CategoriaDTO cDTO= entityToDTO(c).iterator().next();
+		
+		return cDTO;
+	}
+	
 }

@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 
 import it.rdev.blog.api.config.JwtTokenUtil;
 import it.rdev.blog.api.controller.dto.ArticoloDTO;
+import it.rdev.blog.api.controller.dto.CategoriaDTO;
 import it.rdev.blog.api.controller.dto.StatoDTO;
 import it.rdev.blog.api.dao.entity.Articolo;
 import it.rdev.blog.api.dao.entity.Categoria;
@@ -44,8 +45,9 @@ public class ArticoloController {
 
 		@Autowired
 		private BlogArticoloDetailService blogArticolo;
-		//@Autowired
-		//private BlogCategoriaDetailService blogCategoria;
+		@Autowired
+		private BlogCategoriaDetailService blogCategoria;
+		
 		@Autowired
 		private JwtTokenUtil jwtUtil;
 		
@@ -201,7 +203,10 @@ public class ArticoloController {
 				token = token.replaceAll("Bearer ", "");
 				Long userId = jwtUtil.getUserIdFromToken(token);
 				
+			
+				
 				articolo.getAutore().setId(userId);
+				articolo.getCategoria().setId(blogCategoria.getCategoria(articolo.getCategoria().getNome()).getId() );
 				System.out.println("UserID: "+ userId);
 				//System.out.println("UserID: "+ articolo.getAutore().getId());
 				
@@ -238,6 +243,10 @@ public class ArticoloController {
 				
 				articolo.setAutore(a.getAutore()); //funziona
 				articolo.setId(a.getId());
+				/*
+				a.getCategoria().setId(articolo.getCategoria().getId());
+				articolo.setCategoria(a.getCategoria());
+				*/
 				
 				//salvo articolo
 				if(blogArticolo.save(articolo) == null) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);

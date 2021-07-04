@@ -77,7 +77,7 @@ public class BlogArticoloDetailService{
 		a.setDataUltimaModifica(aDTO.getDataUltimaModifica());
 		a.setDataCreazione(aDTO.getDataCreazione());
 		a.setAutore(aDTO.getAutore());
-		//a.setCategoria(aDTO.getCategoria());
+		a.setCategoria(aDTO.getCategoria());
 		//a.setStato(aDTO.getStato());
 		
 		return a;
