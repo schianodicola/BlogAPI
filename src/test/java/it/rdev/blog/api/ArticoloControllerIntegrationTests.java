@@ -101,7 +101,8 @@ class ArticoloControllerIntegrationTests {
 		client.get().uri("/api/articolo")
 		.exchange()
 		.expectStatus()
-		.isNotFound();		
+		.isNotFound();
+		
 	}
 	
 	@Test

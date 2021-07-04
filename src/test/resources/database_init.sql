@@ -4,12 +4,16 @@ CREATE TABLE IF NOT EXISTS users (
   password varchar(100) NOT NULL,
   PRIMARY KEY (id)
 );
---
+
 --
 -- ddinuzzo/password02
 INSERT INTO users
 (username, password)
 VALUES('ddinuzzo', '$2a$10$vj3PqvSqQSsLhknZpxU2oOIUOdmm6cpPu1shwcyXHVzba.xBWLe4K');
+-- user: test/ pass: test
+INSERT INTO users
+(username, password)
+VALUES('test', '$2a$10$0ACdD9GIb.YpIxVrAyjJru0hPuHPicx0Jp.w/WARq8LbH8./xNYxi');
 
 CREATE TABLE IF NOT EXISTS categoria (
 	id bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -81,4 +85,4 @@ CREATE TABLE IF NOT EXISTS stato (
 
 
 -- INSERT FOR TEST
-INSERT INTO categoria (nome) VALUES('Hardware');
+-- INSERT INTO categoria (nome) VALUES('Hardware');
