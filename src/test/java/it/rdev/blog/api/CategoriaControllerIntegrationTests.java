@@ -5,12 +5,15 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.rdev.blog.api.dao.CategoriaDAO;
 import it.rdev.blog.api.dao.entity.Categoria;
+
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DisplayName("<= Categoria Controller Integration Test =>")

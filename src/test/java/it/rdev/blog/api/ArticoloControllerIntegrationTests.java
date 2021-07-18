@@ -15,14 +15,18 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.rdev.blog.api.dao.ArticoloDAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DisplayName("<= ArticoloControllerIntegration Test =>")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Sql(scripts = {"/database_init.sql"})
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+//@Sql(scripts = {"/database_init.sql"})
 @Transactional
-class ArticoloControllerIntegrationTests {
+class ArticoloControllerIntegrationTests extends TestDbInit{
 
+	private Logger log = LoggerFactory.getLogger(getClass());
+	
 	@Autowired
 	private WebTestClient client;
 	
@@ -42,16 +46,18 @@ class ArticoloControllerIntegrationTests {
 		
 			//Categoria categoria= new Categoria();
 			
-			
+			if(token1!=null) {
 			for (int i = 1; i<4; i++) {
 				client.post().uri("/api/articolo")
-				.header("Authorization", "Bearer " + token1)
 				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer " + token1)
 				.bodyValue("{ \"titolo\": \"articolo"+ i +"\", "
 						+ "\"sottotitolo\": \"sottotitolo"+ i +"\", "
-						+ "\"testo\": \"testo dell'articolo numero " + i + "\", "
+						+ "\"testo\": \"testo dell'articolo " + i + "\", "
 						+ "\"categoria\": \"Hardware\"}")
 				.exchange().expectStatus().isNoContent();
+			}
 			}
 			
 			
@@ -71,7 +77,7 @@ class ArticoloControllerIntegrationTests {
 	}
 	
 	private String authenticate(String username, String password) {
-		
+		/*
 		byte[] response = client.post().uri("/auth")
 				.contentType(MediaType.APPLICATION_JSON)
 				.bodyValue("{ \"username\": \"" + username + 
@@ -89,9 +95,32 @@ class ArticoloControllerIntegrationTests {
 			res= res.substring(0, i);
 			i=res.lastIndexOf("\"");
 			if(i>=0) token= res.substring(i+1);
-			
+			log.info("TOKEN ----> " + token);
 		}
+		*/	
+		String token=null;
+		byte[] response = client.post().uri("/auth")
+				.contentType(MediaType.APPLICATION_JSON)
+				.bodyValue("{ \"username\": \"test\", \"password\": \"test\" }")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody()
+				.jsonPath("$.token").exists()
+				.returnResult().getResponseBodyContent();
 			
+			String textResp = new String(response);
+			log.info("RESPONSE ----> " + textResp);
+			int lastPos = textResp.lastIndexOf("\"");
+			if(lastPos >= 0) {
+				textResp = textResp.substring(0, lastPos);
+				lastPos = textResp.lastIndexOf("\"");
+				if(lastPos >= 0) {
+					token = textResp.substring(lastPos + 1);
+					log.info("TOKEN ----> " + token);
+				}
+			}
+			System.out.println("TOKENNNNNN : " +token);
 		return token;
 	}
 	
@@ -101,8 +130,8 @@ class ArticoloControllerIntegrationTests {
 		client.get().uri("/api/articolo")
 		.exchange()
 		.expectStatus()
-		.isNotFound();
-		
+		//.isNotFound();
+		.isOk();
 	}
 	
 	@Test

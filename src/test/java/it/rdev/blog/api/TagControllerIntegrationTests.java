@@ -5,11 +5,14 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import it.rdev.blog.api.dao.TagDAO;
+import it.rdev.blog.api.dao.entity.Articolo;
 import it.rdev.blog.api.dao.entity.Tag;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -19,7 +22,8 @@ class TagControllerIntegrationTests extends TestDbInit{
 	@Autowired
 	private WebTestClient client;
 	
-	@Autowired
+	//@Autowired
+	@Mock
 	private TagDAO tDAO;
 	
 	@Test
@@ -44,9 +48,6 @@ class TagControllerIntegrationTests extends TestDbInit{
 		.expectStatus().isOk();
 	}
 	
-	@Test
-	void test() {
-		fail("Not yet implemented");
-	}
+	
 
 }

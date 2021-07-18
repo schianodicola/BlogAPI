@@ -21,11 +21,12 @@ public class CategoriaController {
 	private BlogCategoriaDetailService blogCategoria;
 	
 	@RequestMapping(path = "", method = RequestMethod.GET)
-	@ResponseStatus(HttpStatus.OK)
+	//@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<?> get() {
 		
 		Set<CategoriaDTO> listaCategorie = blogCategoria.getAll();
-		if(listaCategorie != null) return new ResponseEntity<>(listaCategorie, HttpStatus.OK);
+		//if(listaCategorie != null) return new ResponseEntity<>(listaCategorie, HttpStatus.OK);
+		if(!listaCategorie.isEmpty()) return new ResponseEntity<>(listaCategorie, HttpStatus.OK);
 		else return new ResponseEntity<>("Non è presente nessuna categoria", HttpStatus.NOT_FOUND);
 		
 	}

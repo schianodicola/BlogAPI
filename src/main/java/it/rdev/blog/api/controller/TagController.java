@@ -24,7 +24,8 @@ public class TagController {
 	public ResponseEntity<?> getAllTag() {
 		
 		Set<TagDTO> listaTag = blogTag.getAll();
-		if(listaTag != null) return new ResponseEntity<>(listaTag, HttpStatus.OK);
+		//if(listaTag != null) return new ResponseEntity<>(listaTag, HttpStatus.OK);
+		if(!listaTag.isEmpty()) return new ResponseEntity<>(listaTag, HttpStatus.OK);
 		else return new ResponseEntity<>("Non esistono tag", HttpStatus.NOT_FOUND);
 	}
 	

@@ -172,7 +172,8 @@ public class ArticoloController {
 			
 			
 			lArticoli= blogArticolo.findAll();
-			if(lArticoli == null) return new ResponseEntity<>("[getArticoli] Non ho trovato articoli", HttpStatus.NOT_FOUND);
+			//if(lArticoli == null) return new ResponseEntity<>("[getArticoli] Non ho trovato articoli", HttpStatus.NOT_FOUND);
+			if(lArticoli.isEmpty()) return new ResponseEntity<>("[getArticoli] Non ho trovato articoli", HttpStatus.NOT_FOUND);
 			System.out.println("USERID: " + userId);
 			
 			if(token != null && token.startsWith("Bearer")) {
@@ -185,7 +186,8 @@ public class ArticoloController {
 			lArticoli.removeIf(s -> s.getStato()== null && s.getAutore().getId()!=uId);
 			System.out.println("RIMUOVO ALCUNE BOZZE2: " + uId);
 			//}
-			return new ResponseEntity<>(lArticoli, HttpStatus.OK);
+			if(lArticoli.isEmpty()) return new ResponseEntity<>("[getArticoli] Non ho trovato articoli", HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<>(lArticoli, HttpStatus.OK);
 		
 		}
 		

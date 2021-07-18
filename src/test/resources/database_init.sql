@@ -86,3 +86,8 @@ CREATE TABLE IF NOT EXISTS stato (
 
 -- INSERT FOR TEST
 -- INSERT INTO categoria (nome) VALUES('Hardware');
+-- INSERT INTO articolo (titolo,sottotitolo,testo, data_ultima_modifica,data_creazione, id_autore) VALUES('cpu','ciao','ciao','2021-06-21T13:30:00','2021-06-21T13:30:00',2);
+-- INSERT INTO stato (data_pubblicazione, id_articolo) VALUES('2021-06-21T13:30:00',1);
+
+
+
